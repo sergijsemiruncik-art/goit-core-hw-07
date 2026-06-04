@@ -1,5 +1,13 @@
-from main import AddressBook, Record
+from address_book import AddressBook, Record
 
+
+def input_error(func):
+    def wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except AttributeError:
+            return "Contact not found."
+    return wrapper
 
 # Parses user input by splitting it into command and arguments
 def parse_input(user_input: str):
@@ -27,6 +35,7 @@ def add_contact(args, book):
 
 # Changes an existing phone number for a contact
 # Requires: name, old phone number, and new phone number
+@input_error
 def change_contact(args, book):
     if len(args) != 3:
         return "Please enter name, old phone number and new phone number."
@@ -34,15 +43,13 @@ def change_contact(args, book):
     name, old_phone, new_phone = args
     record = book.find(name)
 
-    if record is None:
-        return "Contact not found."
-
     record.edit_phone(old_phone, new_phone)
     return "Contact updated."
 
 
 # Displays all phone numbers for a specific contact
 # Requires: contact name
+@input_error
 def show_phone(args, book):
     if len(args) != 1:
         return "Please enter a username."
@@ -50,17 +57,12 @@ def show_phone(args, book):
     name = args[0]
     record = book.find(name)
 
-    if record is None:
-        return "Contact not found."
-
-    if not record.phones:
-        return "Contact has no phone number."
-
     return "; ".join(phone.value for phone in record.phones)
 
 
 # Adds a birthday to a contact
 # Requires: name and birthday in DD.MM.YYYY format
+@input_error
 def add_birthday(args, book):
     if len(args) != 2:
         return "Please enter name and birthday."
@@ -68,15 +70,13 @@ def add_birthday(args, book):
     name, birthday = args
     record = book.find(name)
 
-    if record is None:
-        return "Contact not found."
-
     record.add_birthday(birthday)
     return "Birthday added."
 
 
 # Displays the birthday for a specific contact
 # Requires: contact name
+@input_error
 def show_birthday(args, book):
     if len(args) != 1:
         return "Please enter a username."
@@ -84,13 +84,10 @@ def show_birthday(args, book):
     name = args[0]
     record = book.find(name)
 
-    if record is None:
-        return "Contact not found."
-
     if record.birthday is None:
         return "Birthday not found."
 
-    return record.birthday.value.strftime("%d.%m.%Y")
+    return record.birthday.value
 
 
 # Shows all upcoming birthdays for the next 7 days
