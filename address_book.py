@@ -30,11 +30,11 @@ class Birthday(Field):
             if not isinstance(value, str):
                 raise ValueError('Birthday must be a string')
 
-            birthday = datetime.strptime(value, '%d.%m.%Y').date()  # Validate date format
+            datetime.strptime(value, '%d.%m.%Y')  # Validate date format
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
 
-        super().__init__(birthday)
+        super().__init__(value)
 
 # Represents a single contact record with name, phones, and birthday
 class Record:
@@ -125,7 +125,7 @@ class AddressBook(UserDict):
                 continue
 
             # Get the birthday date and adjust to current year
-            birthday = record.birthday.value
+            birthday = datetime.strptime(record.birthday.value, "%d.%m.%Y").date()
             birthday_this_year = birthday.replace(year=today.year)
 
             # If birthday already passed this year, move to next year
